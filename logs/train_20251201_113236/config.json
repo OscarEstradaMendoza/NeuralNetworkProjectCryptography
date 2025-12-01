@@ -1,0 +1,14 @@
+{
+  "image_size": 64,
+  "channels": 3,
+  "message_length": 256,
+  "batch_size": 32,
+  "learning_rate": 0.0002,
+  "lambdas": {
+    "reconstruction": 1.0,
+    "message": 2.0,
+    "authentication": 1.0,
+    "imperceptibility": 0.5
+  },
+  "aes_key_hex": "0bc752d3eb0974348d2c4dc533d31abf"
+}

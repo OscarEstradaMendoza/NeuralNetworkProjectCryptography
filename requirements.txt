@@ -1,0 +1,29 @@
+# Neural Image Authentication System - Requirements
+tensorflow>=2.10.0
+keras>=2.10.0
+
+# Scientific computing and data processing
+numpy>=1.21.0
+scipy>=1.7.0
+
+# Image processing
+Pillow>=9.0.0
+
+# Cryptography
+pycryptodome>=3.15.0
+
+# Web framework for the browser-based GUI
+flask>=2.0.0
+
+# Visualization
+matplotlib>=3.5.0
+seaborn>=0.12.0
+
+# Utilities
+tqdm>=4.60.0
+pyyaml>=6.0
+
+# Development (optional)
+black>=22.0.0
+flake8>=4.0.0
+pytest>=7.0.0
