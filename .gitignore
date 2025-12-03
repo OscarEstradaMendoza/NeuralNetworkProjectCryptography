@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Large Training Files
+logs/*/models/*.keras
+logs/*/models/*.h5
+logs/*/models/*.weights
+
+# Keep structure but ignore large models
+# If you want to share logs, keep JSON and PNG but not model files
+
+# Sensitive Data
+keys/default_key
+keys/*.key
+
+# Evaluation Results (optional - comment out if you want to commit graphs)
+# evaluation_results/*.png
+
+# TensorFlow
+*.ckpt
+*.pb
+checkpoint
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
