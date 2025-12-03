@@ -1,0 +1,42 @@
+[
+  {
+    "epochs": 1,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_185704",
+    "metrics": {
+      "authenticity_rate": 1.0,
+      "avg_confidence": 0.5262965393066407,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "epochs": 2,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_185845",
+    "metrics": {
+      "authenticity_rate": 1.0,
+      "avg_confidence": 0.5066190850734711,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "epochs": 5,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_190503",
+    "metrics": {
+      "authenticity_rate": 1.0,
+      "avg_confidence": 0.5375966846942901,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "epochs": 10,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_191614",
+    "metrics": {
+      "authenticity_rate": 1.0,
+      "avg_confidence": 0.5830305778980255,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  }
+]

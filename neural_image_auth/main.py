@@ -15,8 +15,9 @@ import numpy as np
 import tensorflow as tf
 from typing import Optional, Dict
 
-# Set up TensorFlow
-tf.get_logger().setLevel("ERROR")
+# Set up TensorFlow and configure device for Apple Silicon
+from .device_setup import configure_device
+configure_device()
 
 from .config import (
     IMAGE_SIZE,
@@ -300,24 +301,33 @@ def save_results(
     print(f"\nAll results saved to: {log_dir}")
 
 
-def main(
+def train_and_save(
     num_epochs: int = ADV_ITERATIONS,
     num_alice_bob_iters: int = ALICE_BOB_ITERATIONS,
     num_eve_iters: int = EVE_ITERATIONS,
-) -> None:
+    return_models: bool = False,
+    log_dir: Optional[str] = None,
+) -> Optional[tuple]:
     """
-    Main training workflow.
+    Train models and optionally return them for evaluation.
 
     Args:
         num_epochs: Number of adversarial training epochs
         num_alice_bob_iters: Alice+Bob training iterations per epoch
         num_eve_iters: Eve training iterations per epoch
+        return_models: If True, return (alice, bob, eve, aes_key, log_dir)
+        log_dir: Optional log directory (if None, creates new one)
+
+    Returns:
+        If return_models=True: Tuple of (alice, bob, eve, aes_key, log_dir)
+        Otherwise: None
     """
     # Set random seed for reproducibility
     set_random_seed()
 
     # Create log directory
-    log_dir = create_log_directory(LOG_DIR)
+    if log_dir is None:
+        log_dir = create_log_directory(LOG_DIR)
 
     # Initialize models
     alice, bob, eve = initialize_models()
@@ -360,6 +370,31 @@ def main(
     print("TRAINING COMPLETED SUCCESSFULLY")
     print("=" * 60)
     print(f"Results saved to: {log_dir}")
+
+    if return_models:
+        return alice, bob, eve, aes_key, log_dir
+    return None
+
+
+def main(
+    num_epochs: int = ADV_ITERATIONS,
+    num_alice_bob_iters: int = ALICE_BOB_ITERATIONS,
+    num_eve_iters: int = EVE_ITERATIONS,
+) -> None:
+    """
+    Main training workflow.
+
+    Args:
+        num_epochs: Number of adversarial training epochs
+        num_alice_bob_iters: Alice+Bob training iterations per epoch
+        num_eve_iters: Eve training iterations per epoch
+    """
+    train_and_save(
+        num_epochs=num_epochs,
+        num_alice_bob_iters=num_alice_bob_iters,
+        num_eve_iters=num_eve_iters,
+        return_models=False,
+    )
 
 
 if __name__ == "__main__":

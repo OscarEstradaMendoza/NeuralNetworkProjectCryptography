@@ -115,8 +115,29 @@
             transform: translateY(0);
         }
         
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
         .btn-secondary {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            margin-top: 15px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+            margin-top: 0;
         }
         
         .image-preview {
@@ -250,6 +271,10 @@
                     <button type="submit" class="btn">Sign Image</button>
                 </form>
                 
+                <button id="downloadBtn" class="btn btn-download" style="display: none;" onclick="downloadSignedImage()">
+                    📥 Download Signed Image
+                </button>
+                
                 <div class="loading" id="signLoading">
                     <div class="spinner"></div>
                     <p>Signing image...</p>
@@ -288,6 +313,64 @@
     </div>
     
     <script>
+        // Global variable to store signed image data
+        let currentSignedImage = null;
+        let currentOriginalFilename = null;
+        
+        // Function to download signed image
+        async function downloadSignedImage() {
+            if (!currentSignedImage) {
+                alert('No signed image available to download');
+                return;
+            }
+            
+            try {
+                // Create filename based on original (if available)
+                let filename = 'signed_image.png';
+                if (currentOriginalFilename) {
+                    const baseName = currentOriginalFilename.replace(/\.[^/.]+$/, '');
+                    filename = `${baseName}_signed.png`;
+                }
+                
+                const response = await fetch('/api/download_signed', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        signed_image: currentSignedImage,
+                        filename: filename
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                
+                // Create blob from response and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                // Update status
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = `✓ Downloaded ${filename}`;
+                statusDiv.className = 'status success';
+                setTimeout(() => {
+                    statusDiv.textContent = '✓ System Ready';
+                }, 3000);
+                
+            } catch (error) {
+                alert('Error downloading image: ' + error.message);
+            }
+        }
+        
         // Check system status
         fetch('/api/status')
             .then(response => response.json())
@@ -339,11 +422,22 @@
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Store signed image for download
+                    currentSignedImage = data.signed_image;
+                    currentOriginalFilename = imageFile.name;
+                    
+                    // Show download button
+                    document.getElementById('downloadBtn').style.display = 'block';
+                    
                     preview.innerHTML = `<img src="${data.signed_image}" alt="Signed Image">`;
                     results.innerHTML = `
                         <div class="result-item success">
                             <label>Status:</label>
                             <div class="value">✓ ${data.message}</div>
+                        </div>
+                        <div class="result-item">
+                            <label>Next Step:</label>
+                            <div class="value">Click "Download Signed Image" button above, then upload the downloaded image to verify it.</div>
                         </div>
                     `;
                 } else {

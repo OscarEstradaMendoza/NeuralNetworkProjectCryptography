@@ -1,0 +1,46 @@
+[
+  {
+    "message_string_length": 8,
+    "actual_bit_length": 256,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_193222",
+    "metrics": {
+      "authenticity_rate": 0.0,
+      "avg_confidence": 0.4810495603084564,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "message_string_length": 16,
+    "actual_bit_length": 384,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_193222",
+    "metrics": {
+      "authenticity_rate": 0.0,
+      "avg_confidence": 0.0,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "message_string_length": 32,
+    "actual_bit_length": 512,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_193222",
+    "metrics": {
+      "authenticity_rate": 0.0,
+      "avg_confidence": 0.0,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  },
+  {
+    "message_string_length": 64,
+    "actual_bit_length": 768,
+    "log_dir": "/Users/oscarestradamendoza/Desktop/Cryptography_Project/logs/train_20251202_193222",
+    "metrics": {
+      "authenticity_rate": 0.0,
+      "avg_confidence": 0.0,
+      "avg_bit_error_rate": 1.0,
+      "decryption_success_rate": 0.0
+    }
+  }
+]

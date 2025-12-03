@@ -23,9 +23,14 @@ import base64  # Encoding images for web display
 # Deep learning framework
 import tensorflow as tf
 
-# Suppress TensorFlow warnings for cleaner console output
-tf.get_logger().setLevel("ERROR")
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# Configure device for Apple Silicon (M1 Pro)
+try:
+    from neural_image_auth.device_setup import configure_device
+    configure_device()
+except ImportError:
+    # Fallback if device_setup not available
+    tf.get_logger().setLevel("ERROR")
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Import neural network models (Alice = encoder, Bob = decoder/classifier)
 from neural_image_auth.models.alice import create_alice_network
@@ -271,6 +276,55 @@ def sign_image():
         
     except Exception as e:
         # Return error response if anything goes wrong
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/download_signed', methods=['POST'])
+def download_signed():
+    """
+    API endpoint to download the signed image.
+    
+    This endpoint:
+    1. Receives a base64-encoded signed image
+    2. Converts it back to binary PNG format
+    3. Returns it as a downloadable file
+    
+    Request format:
+        - POST with JSON containing:
+          - 'signed_image': base64-encoded image data URL
+          - 'filename': optional filename (default: 'signed_image.png')
+    
+    Returns:
+        PNG file download
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'signed_image' not in data:
+            return jsonify({'error': 'No signed image data provided'}), 400
+        
+        # Extract base64 image data (remove data URL prefix if present)
+        signed_image_b64 = data['signed_image']
+        if signed_image_b64.startswith('data:image'):
+            signed_image_b64 = signed_image_b64.split(',')[1]
+        
+        # Decode base64 to binary
+        image_binary = base64.b64decode(signed_image_b64)
+        
+        # Get filename (default to signed_image.png)
+        filename = data.get('filename', 'signed_image.png')
+        if not filename.endswith('.png'):
+            filename += '.png'
+        
+        # Create file-like object and send as download
+        return send_file(
+            io.BytesIO(image_binary),
+            mimetype='image/png',
+            as_attachment=True,
+            download_name=filename
+        )
+        
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 

@@ -29,9 +29,14 @@ import os
 import sys
 import tensorflow as tf
 
-# Suppress TensorFlow warnings
-tf.get_logger().setLevel("ERROR")
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# Configure device for Apple Silicon (M1 Pro)
+try:
+    from neural_image_auth.device_setup import configure_device
+    configure_device()
+except ImportError:
+    # Fallback if device_setup not available
+    tf.get_logger().setLevel("ERROR")
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from neural_image_auth.models.alice import create_alice_network
 from neural_image_auth.models.bob import create_bob_network
@@ -154,8 +159,13 @@ class ImageAuthGUI:
         action_frame.pack(fill=tk.X, pady=(0, 10))
         
         ttk.Button(action_frame, text="Sign Image", command=self.sign_image).pack(fill=tk.X, pady=2)
+        
+        # Download button (initially disabled)
+        self.download_btn = ttk.Button(action_frame, text="📥 Download Signed Image", 
+                                       command=self.download_signed_image, state=tk.DISABLED)
+        self.download_btn.pack(fill=tk.X, pady=2)
+        
         ttk.Button(action_frame, text="Verify Image", command=self.verify_image).pack(fill=tk.X, pady=2)
-        ttk.Button(action_frame, text="Save Signed Image", command=self.save_signed_image).pack(fill=tk.X, pady=2)
         
         # Results section
         results_frame = ttk.LabelFrame(left_panel, text="Results", padding="10")
@@ -259,7 +269,11 @@ class ImageAuthGUI:
             self.image_label.config(image=photo, text="")
             self.image_label.image = photo
             
+            # Enable download button
+            self.download_btn.config(state=tk.NORMAL)
+            
             self.status_text.insert(tk.END, "✓ Image signed successfully!\n")
+            self.status_text.insert(tk.END, "  Click 'Download Signed Image' to save it.\n")
             self.status_text.see(tk.END)
             
             # Update results
@@ -271,6 +285,47 @@ class ImageAuthGUI:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to sign image: {str(e)}")
             self.status_text.insert(tk.END, f"✗ Error signing image: {str(e)}\n")
+    
+    def download_signed_image(self):
+        """Download the signed image to a file."""
+        if self.signed_image is None:
+            messagebox.showwarning("Warning", "No signed image available. Please sign an image first.")
+            return
+        
+        try:
+            # Get save file path
+            if self.current_image_path:
+                # Suggest filename based on original
+                base_name = os.path.splitext(os.path.basename(self.current_image_path))[0]
+                default_name = f"{base_name}_signed.png"
+            else:
+                default_name = "signed_image.png"
+            
+            file_path = filedialog.asksaveasfilename(
+                title="Save Signed Image",
+                defaultextension=".png",
+                initialfile=default_name,
+                filetypes=[
+                    ("PNG files", "*.png"),
+                    ("JPEG files", "*.jpg *.jpeg"),
+                    ("All files", "*.*")
+                ]
+            )
+            
+            if file_path:
+                # Convert numpy array to PIL Image and save
+                img = Image.fromarray(self.signed_image.astype(np.uint8))
+                img.save(file_path)
+                
+                self.status_text.insert(tk.END, f"✓ Signed image saved to: {file_path}\n")
+                self.status_text.insert(tk.END, f"  Next step: Upload this file to verify it.\n")
+                self.status_text.see(tk.END)
+                
+                messagebox.showinfo("Success", f"Signed image saved successfully!\n\nFile: {file_path}\n\nYou can now upload this image to verify its authenticity.")
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save image: {str(e)}")
+            self.status_text.insert(tk.END, f"✗ Error saving image: {str(e)}\n")
     
     def verify_image(self):
         """Verify the current image."""

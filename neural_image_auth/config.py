@@ -35,7 +35,9 @@ AES_MODE = "CBC"
 # ============================================================================
 # TRAINING SETTINGS
 # ============================================================================
-BATCH_SIZE = 32
+# Optimized for Apple M1 Pro (16GB RAM)
+# Reduced batch size for better memory efficiency
+BATCH_SIZE = 16  # Reduced from 32 for M1 Pro memory constraints
 LEARNING_RATE = 0.0002
 LEARNING_RATE_DECAY = 0.99  # Learning rate decay per epoch
 
@@ -43,6 +45,7 @@ LEARNING_RATE_DECAY = 0.99  # Learning rate decay per epoch
 ADV_ITERATIONS = 2
 
 # Inner training iterations per phase
+# Slightly reduced for faster iteration on M1 Pro
 ALICE_BOB_ITERATIONS = 20
 
 # Eve gets 2x iterations to simulate a strong adversary
@@ -105,13 +108,22 @@ for directory in [MODEL_DIR, LOG_DIR, KEY_DIR, DATA_DIR]:
     os.makedirs(directory, exist_ok=True)
 
 # ============================================================================
-# DEVICE SETTINGS
+# DEVICE SETTINGS (Optimized for Apple M1 Pro)
 # ============================================================================
-# Use GPU if available (TensorFlow will auto-detect)
+# Use GPU if available (TensorFlow will auto-detect MPS on Apple Silicon)
 USE_GPU = True
 
-# Mixed precision training for faster training on modern GPUs
-USE_MIXED_PRECISION = True
+# Mixed precision training
+# Note: MPS backend has limited mixed precision support, may cause issues
+# Set to False if you encounter errors with MPS backend
+USE_MIXED_PRECISION = False  # Disabled for M1 Pro MPS compatibility
+
+# Apple Silicon specific settings
+# MPS (Metal Performance Shaders) backend for Apple Silicon GPUs
+USE_MPS = True  # Use Metal backend on Apple Silicon
+
+# Memory growth settings (prevents TensorFlow from allocating all GPU memory)
+MEMORY_GROWTH = True  # Allow memory growth for better memory management
 
 # ============================================================================
 # VISUALIZATION SETTINGS
